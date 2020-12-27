@@ -58,6 +58,7 @@ private enum FormatDataType
 	FmtFloat(floatType:FloatType);
 	FmtString;
 	FmtPointer;
+	FmtHex;
 	FmtNothing;
 }
 
@@ -195,8 +196,15 @@ class Printf
 							formatString(value, tagArgs, output);
 						
 						case FmtPointer:
-							throw new PrintfError("specifier 'p' is not supported");
-						
+							output.add(value.toString());
+							//throw new PrintfError("specifier 'p' is not supported");
+						case FmtHex:
+							if (Std.isOfType(value,Int)) {
+								formatHexadecimal(value,tagArgs,output);
+							}else if (Std.isOfType(value,String)){
+								var hexString = haxe.io.Bytes.ofString(value).toHex();
+								output.add(hexString);
+							}
 						case FmtNothing:
 							throw new PrintfError("specifier 'n' is not supported");
 					};
@@ -362,8 +370,8 @@ class Printf
 							case "d".code: FmtInt(ISignedDecimal);
 							case "u".code: FmtInt(IUnsignedDecimal);
 							case "c".code: FmtInt(ICharacter);
-							case "x".code: FmtInt(IHex);
-							case "X".code: params.flags.set(UpperCase); FmtInt(IHex);
+							case "x".code: FmtHex;
+							case "X".code: params.flags.set(UpperCase); FmtHex;
 							case "o".code: FmtInt(IOctal);
 							case "b".code: FmtInt(IBin);
 							case "f".code: FmtFloat(FNormal);
